@@ -24,7 +24,7 @@ end
 
 azioni.inventario = function ()
     print("INVENTARIO")
-    guarda_oggetti(inventory)
+    guarda_oggetti(me.bag)
 end
 
 azioni.dove = function() 
@@ -39,6 +39,10 @@ function string:split(delimiter)
     return result
 end
 
+function clrscr()
+    io.write("\027[H\027[2J")
+end
+
 function make_room(name, desc, uscite, oggetti)
     room = {}
     room.name = name
@@ -49,6 +53,7 @@ function make_room(name, desc, uscite, oggetti)
 end
 
 function go_to_room(argomento) 
+    clrscr()
     print("Sono in " .. current_room.name)
     print("Dovrei andare in una stanza")
     if argomento then 
@@ -117,15 +122,16 @@ function prendi_oggetto(oggetto)
 end
 
 -- TODO - Sezione in costruzione
-function make_personaggio(nome, tipo, statistiche, ruolo, pos)
+function make_personaggio(nome, tipo, statistiche, ruolo, pos, inventario)
     --- ruolo: npc, mob
-    --- statistiche: le varie statistiche: atk, def, mana, res etc etc, solo se non npc
+    --- statistiche: le varie statistiche: life, atk, def, mana, res etc etc, solo se non npc
     --- pos: la posizione in coordinate x, y - per il futuro
     personaggio = {}
     personaggio.nome = nome
     personaggio.tipo = tipo
     personaggio.stats = statistiche
     personaggio.ruolo = ruolo
+    personaggio.bag = inventario
     return personaggio
 end
 
@@ -153,8 +159,19 @@ function show_table(tabella, indent)
       print(pad .. "}" )
 end
 
-function main() 
+function main()
+    clrscr()
+    alive = true 
     inventory = {}
+    me_stats = {
+        life = 100, 
+        atk = 10,
+        def = 5,
+        mana = 10
+    }
+    me_role = "player"
+    me_pos = {x = 0, y = 0}
+    me = make_personaggio("Arundil", "player", me_stats, me_role, me_pos, inventory)
     chiave_segreta = { desc = "Una chiave per la porta segreta" }
     mazza = { desc = "Una mazza chiodata" }
     spada = { desc = "La spada de foco" }
@@ -172,8 +189,13 @@ function main()
     current_room = stanze.giardino
 
 
-    while true do
+    while alive do
+        print("[".. me.nome .. "] - Life: " .. "[ " .. me.stats.life .. " ]")
         io.write("[".. current_room.name .. "] Azione: ")
+        if me.stats.life == 0 then
+            alive = false
+            break
+        end
         valore = io.read()
         local argomenti = valore:split(" ")
         if argomenti[1] == "esci" then 
@@ -181,7 +203,9 @@ function main()
         end
 
         if azioni[argomenti[1]] then
+            clrscr()
             azioni[argomenti[1]](argomenti[2] or nil)
+            -- me.stats.life = me.stats.life - 5
         else
             print("Non so come fare")
         end
@@ -191,10 +215,15 @@ end
 
 while true do
     main()
+    if not alive then 
+    print("SEI MORTO!!!")
+    end
     io.write('Vuoi giocare ancora? ')
     risposta = io.read()
     if risposta == 'no' then
         break
+    else
+        print("HAI UN'ALTRA POSSIBILITÀ!. RINNE REBIRTH!!!")
     end
 
 end

@@ -1,28 +1,6 @@
 #!/usr/bin/env lua
 
 stanze = {
-    segreta = {id = "segreta", 
-               name = "stanza", 
-               desc = "Stanza segreta",
-               uscite = {nord = 'armeria', est = 'giardino'},
-               oggetti = {
-                    chiave = {desc = "Chiave Segreta"},
-                    mazza = {desc = "Una mazza chiodata"},
-                    spada = {desc = "La Spada de foco"}
-                    }
-                },
-    armeria = {id = "armeria", 
-               name = "armeria", 
-               desc = "Armeria", 
-               uscite = {sud = "segreta"}, 
-               oggetti = {}
-              },
-    giardino = {id = "giardino", 
-                name = "giardino", 
-                desc = "Il giardino",
-                uscite = {ovest = "segreta"},
-                oggetti = {}
-               }
 };
 
 azioni = {}
@@ -58,6 +36,15 @@ function string:split(delimiter)
         table.insert(result, match)
     end
     return result
+end
+
+function make_room(name, desc, uscite, oggetti)
+    room = {}
+    room.name = name
+    room.desc = desc
+    room.uscite = uscite
+    room.oggetti = oggetti
+    return room
 end
 
 function go_to_room(argomento) 
@@ -157,6 +144,21 @@ function main()
     current_room = stanze.giardino
     chiave = { desc = "La chiave segreta" }
     inventory = { chiave = chiave}
+    chiave_segreta = { desc = "Una chiave per la porta segreta" }
+    mazza = { desc = "Una mazza chiodata" }
+    spada = { desc = "La spada de foco" }
+    segreta_uscite = {nord= 'armeria', est = 'giardino'}
+    armeria_uscite = { sud = "segreta" }
+    giardino_uscite = { ovest = "segreta" } 
+    segreta_oggetti = { chiave = chiave_segreta , mazza = mazza , spada = spada }
+    atrio_uscite = { ovest = 'armeria' }
+
+    -- creo le stanze
+    stanze.segreta = make_room('segreta', 'Una stanza segreta', segreta_uscite, segreta_oggetti)
+    stanze.atrio = make_room('atrio', 'Un atrio nella penombra', atrio_uscite, {})
+    stanze.armeria = make_room('armeria', 'Armeria', armeria_uscite, {})
+    stanze.giardino = make_room('giardino', 'Il Giardino', giardino_uscite, {})
+
     while true do
         io.write("[".. current_room.name .. "] Azione: ")
         valore = io.read()

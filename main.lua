@@ -23,6 +23,7 @@ azioni.osserva = function (oggetto)
 end
 
 azioni.inventario = function ()
+    print("INVENTARIO")
     guarda_oggetti(inventory)
 end
 
@@ -115,6 +116,18 @@ function prendi_oggetto(oggetto)
     end
 end
 
+-- TODO - Sezione in costruzione
+function make_personaggio(nome, tipo, statistiche, ruolo, pos)
+    --- ruolo: npc, mob
+    --- statistiche: le varie statistiche: atk, def, mana, res etc etc, solo se non npc
+    --- pos: la posizione in coordinate x, y - per il futuro
+    personaggio = {}
+    personaggio.nome = nome
+    personaggio.tipo = tipo
+    personaggio.stats = statistiche
+    personaggio.ruolo = ruolo
+    return personaggio
+end
 
 -- stampa il contenuto e la struttura della tabella
 -- tiene conto anche delle sottotabelle
@@ -141,9 +154,7 @@ function show_table(tabella, indent)
 end
 
 function main() 
-    current_room = stanze.giardino
-    chiave = { desc = "La chiave segreta" }
-    inventory = { chiave = chiave}
+    inventory = {}
     chiave_segreta = { desc = "Una chiave per la porta segreta" }
     mazza = { desc = "Una mazza chiodata" }
     spada = { desc = "La spada de foco" }
@@ -158,6 +169,8 @@ function main()
     stanze.atrio = make_room('atrio', 'Un atrio nella penombra', atrio_uscite, {})
     stanze.armeria = make_room('armeria', 'Armeria', armeria_uscite, {})
     stanze.giardino = make_room('giardino', 'Il Giardino', giardino_uscite, {})
+    current_room = stanze.giardino
+
 
     while true do
         io.write("[".. current_room.name .. "] Azione: ")
